@@ -5,9 +5,9 @@ RAG (Retrieval Augmented Generation) API for professional portfolio chatbot.
 ## 🚀 Technologies
 
 - **Framework**: FastAPI
-- **LLM**: OpenAI GPT-4
+- **LLM**: Google Gemini Flash (FREE)
 - **RAG**: LangChain + FAISS
-- **Embeddings**: OpenAI text-embedding-3-small
+- **Embeddings**: Google Gemini Embeddings (FREE)
 
 ## 📦 Installation
 
@@ -32,10 +32,12 @@ pip install -r requirements.txt
 copy .env.example .env
 ```
 
-2. Add your OpenAI API key in `.env`:
+2. Add your Google API key in `.env`:
 ```
-OPENAI_API_KEY=sk-...
+GOOGLE_API_KEY=your-google-api-key
 ```
+
+> Get your FREE API key at [Google AI Studio](https://makersuite.google.com/)
 
 ## 🏃 Run Server
 
@@ -89,7 +91,7 @@ backend/
 │   ├── api/
 │   │   └── chat.py          # Chat endpoints
 │   └── services/
-│       └── rag_service.py   # RAG service
+│       └── gemini_service.py # RAG service with Gemini
 ├── data/
 │   ├── cv.md                # Resume
 │   ├── experience-ericsson.md
@@ -115,7 +117,7 @@ curl -X POST "http://localhost:8000/api/chat" \
 
 1. Create account on [Railway](https://railway.app)
 2. Connect your GitHub repo
-3. Add `OPENAI_API_KEY` environment variable
+3. Add `GOOGLE_API_KEY` environment variable
 4. Railway will automatically detect FastAPI
 
 ### Render
@@ -125,7 +127,7 @@ curl -X POST "http://localhost:8000/api/chat" \
 3. Connect your repo
 4. Build Command: `pip install -r requirements.txt`
 5. Start Command: `uvicorn main:app --host 0.0.0.0 --port $PORT`
-6. Add `OPENAI_API_KEY` environment variable
+6. Add `GOOGLE_API_KEY` environment variable
 
 ## 📝 Customization
 
@@ -145,7 +147,7 @@ Create a new router in `app/api/` and include it in `main.py`.
 
 ### Modify RAG behavior
 
-Adjust parameters in `app/services/rag_service.py`:
+Adjust parameters in `app/services/gemini_service.py`:
 - `chunk_size`: Text chunk size
 - `chunk_overlap`: Overlap between chunks
 - `k`: Number of documents to retrieve

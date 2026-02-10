@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from app.services.rag_service import rag_service
+from app.services.gemini_service import gemini_service
 
 router = APIRouter()
 
@@ -20,7 +20,7 @@ async def chat(request: ChatRequest):
         if not request.message or not request.message.strip():
             raise HTTPException(status_code=400, detail="Message cannot be empty")
         
-        result = await rag_service.get_response(request.message)
+        result = await gemini_service.get_response(request.message)
         
         return ChatResponse(
             response=result["answer"],
@@ -33,7 +33,7 @@ async def chat(request: ChatRequest):
 async def reset_chat():
     """Reset conversation memory"""
     try:
-        rag_service.memory.clear()
+        gemini_service.memory.clear()
         return {"message": "Conversation reset successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error resetting conversation: {str(e)}")

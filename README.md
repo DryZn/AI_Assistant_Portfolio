@@ -1,5 +1,7 @@
 # Portfolio Assistant API - Backend
 
+![CI/CD Pipeline](https://github.com/DryZn/AI_Assistant_Portfolio/workflows/CI%2FCD%20Pipeline/badge.svg)
+
 RAG (Retrieval Augmented Generation) API for professional portfolio chatbot.
 
 ## 🚀 Technologies
@@ -8,6 +10,27 @@ RAG (Retrieval Augmented Generation) API for professional portfolio chatbot.
 - **LLM**: Google Gemini Flash (FREE)
 - **RAG**: LangChain + FAISS
 - **Embeddings**: Google Gemini Embeddings (FREE)
+- **DevOps**: Docker + GitHub Actions
+- **Testing**: Pytest + Security Scanning
+
+## 🐳 Docker
+
+```bash
+# Build image
+docker build -t portfolio-api .
+
+# Run container
+docker run -p 8000:8000 -e GOOGLE_API_KEY=your-key portfolio-api
+```
+
+## 🔄 CI/CD Pipeline
+
+Automated pipeline with GitHub Actions:
+- ✅ **Code Quality**: Black formatting + Flake8 linting
+- ✅ **Security**: Bandit vulnerability scanning
+- ✅ **Testing**: Pytest unit tests
+- ✅ **Docker**: Container build and testing
+- ✅ **Deployment**: Auto-deploy to Railway on main branch
 
 ## 📦 Installation
 
@@ -21,8 +44,11 @@ venv\Scripts\activate
 # Activate environment (Linux/Mac)
 source venv/bin/activate
 
-# Install dependencies
+# Install production dependencies
 pip install -r requirements.txt
+
+# Install development dependencies (optional)
+pip install -r requirements-dev.txt
 ```
 
 ## ⚙️ Configuration
@@ -43,10 +69,10 @@ GOOGLE_API_KEY=your-google-api-key
 
 ```bash
 # Development mode with auto-reload
-uvicorn main:app --reload --port 8000
+uvicorn src.main:app --reload --port 8000
 
 # Production mode
-uvicorn main:app --host 0.0.0.0 --port 8000
+uvicorn src.main:app --host 0.0.0.0 --port 8000
 ```
 
 API will be accessible at `http://localhost:8000`
@@ -87,22 +113,46 @@ Check API health status
 
 ```
 backend/
-├── app/
-│   ├── api/
-│   │   └── chat.py          # Chat endpoints
-│   └── services/
-│       └── gemini_service.py # RAG service with Gemini
+├── .github/
+│   └── workflows/
+│       └── ci.yml           # CI/CD Pipeline
+├── src/
+│   ├── main.py              # FastAPI application
+│   └── app/
+│       ├── api/
+│       │   └── chat.py      # Chat endpoints
+│       └── services/
+│           └── gemini_service.py # RAG service with Gemini
 ├── data/
 │   ├── cv.md                # Resume
 │   ├── experience-ericsson.md
 │   ├── projects.md
 │   └── skills.md
-├── main.py                  # FastAPI application
+├── tests/
+│   └── test_api.py          # API tests
+├── Dockerfile               # Container configuration
 ├── requirements.txt
 └── .env.example
 ```
 
 ## 🧪 Testing
+
+```bash
+# Run tests locally
+pytest tests/ -v
+
+# Run with coverage
+pytest tests/ --cov=app
+
+# Format code
+black .
+
+# Lint code
+flake8 .
+
+# Security scan
+bandit -r .
+```
 
 ```bash
 # Test API with curl
@@ -126,7 +176,7 @@ curl -X POST "http://localhost:8000/api/chat" \
 2. Create new Web Service
 3. Connect your repo
 4. Build Command: `pip install -r requirements.txt`
-5. Start Command: `uvicorn main:app --host 0.0.0.0 --port $PORT`
+5. Start Command: `uvicorn src.main:app --host 0.0.0.0 --port $PORT`
 6. Add `GOOGLE_API_KEY` environment variable
 
 ## 📝 Customization
@@ -143,11 +193,11 @@ RAG system will automatically reload documents on next startup.
 
 ### Add new endpoints
 
-Create a new router in `app/api/` and include it in `main.py`.
+Create a new router in `src/app/api/` and include it in `src/main.py`.
 
 ### Modify RAG behavior
 
-Adjust parameters in `app/services/gemini_service.py`:
+Adjust parameters in `src/app/services/gemini_service.py`:
 - `chunk_size`: Text chunk size
 - `chunk_overlap`: Overlap between chunks
 - `k`: Number of documents to retrieve

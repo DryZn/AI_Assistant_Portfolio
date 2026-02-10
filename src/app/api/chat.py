@@ -1,15 +1,28 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from app.services.gemini_service import gemini_service
+from src.app.services.gemini_service import GeminiRAGService
 
 router = APIRouter()
+
+# Lazy loading du service
+_gemini_service = None
+
+
+def get_gemini_service():
+    global _gemini_service
+    if _gemini_service is None:
+        _gemini_service = GeminiRAGService()
+    return _gemini_service
+
 
 class ChatRequest(BaseModel):
     message: str
 
+
 class ChatResponse(BaseModel):
     response: str
     sources: list[str] = []
+
 
 @router.post("/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest):
@@ -19,21 +32,25 @@ async def chat(request: ChatRequest):
     try:
         if not request.message or not request.message.strip():
             raise HTTPException(status_code=400, detail="Message cannot be empty")
-        
-        result = await gemini_service.get_response(request.message)
-        
-        return ChatResponse(
-            response=result["answer"],
-            sources=result["sources"]
-        )
+
+        service = get_gemini_service()
+        result = await service.get_response(request.message)
+
+        return ChatResponse(response=result["answer"], sources=result["sources"])
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error processing request: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Error processing request: {str(e)}"
+        )
+
 
 @router.post("/chat/reset")
 async def reset_chat():
     """Reset conversation memory"""
     try:
-        gemini_service.memory.clear()
+        service = get_gemini_service()
+        service.memory.clear()
         return {"message": "Conversation reset successfully"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error resetting conversation: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Error resetting conversation: {str(e)}"
+        )

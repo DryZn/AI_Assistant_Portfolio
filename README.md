@@ -1,6 +1,7 @@
 # Portfolio Assistant API - Backend
 
-![CI/CD Pipeline](https://github.com/DryZn/AI_Assistant_Portfolio/workflows/CI%2FCD%20Pipeline/badge.svg)
+[![CI/CD Pipeline](https://github.com/DryZn/AI_Assistant_Portfolio/workflows/CI%2FCD%20Pipeline/badge.svg)](https://github.com/DryZn/AI_Assistant_Portfolio/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 RAG (Retrieval Augmented Generation) API for professional portfolio chatbot.
 
@@ -181,6 +182,11 @@ curl -X POST "http://localhost:8000/api/chat" \
 
 ## 📝 Customization
 
+**⚠️ Personal Data Notice**
+The files in `data/` contain personal information for demonstration purposes only.
+These files are NOT covered by the MIT license and may not be copied or reused.
+Replace with your own content when using this template.
+
 To customize chatbot data, modify files in `data/`:
 - `cv.md`: Resume information
 - `experience-ericsson.md`: Professional experience details
@@ -206,3 +212,9 @@ Adjust parameters in `src/app/services/gemini_service.py`:
 ## 📧 Support
 
 For questions: lesenfans.anthony@gmail.com
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+**⚠️ Personal Data Exception**: The contents of the `data/` directory contain personal information and are NOT licensed under MIT. These files may not be copied, modified, or redistributed without explicit permission.

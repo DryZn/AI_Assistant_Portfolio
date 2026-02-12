@@ -6,6 +6,11 @@
 
 RAG (Retrieval Augmented Generation) API for professional portfolio chatbot.
 
+## 🔗 Related Repository
+
+**Frontend**: [Portfolio Website](https://github.com/DryZn/portfolio) - Next.js 14 frontend with integrated chatbot UI  
+**Live Demo**: https://portfolio-anthony-lesenfans.vercel.app/
+
 ## 🌐 Live Demo
 
 **API URL**: https://ai-assistant-portfolio-eka7.onrender.com

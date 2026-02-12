@@ -2,8 +2,17 @@
 
 [![CI/CD Pipeline](https://github.com/DryZn/AI_Assistant_Portfolio/workflows/CI%2FCD%20Pipeline/badge.svg)](https://github.com/DryZn/AI_Assistant_Portfolio/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Render](https://img.shields.io/badge/Render-Deployed-46E3B7?logo=render)](https://ai-assistant-portfolio-eka7.onrender.com)
 
 RAG (Retrieval Augmented Generation) API for professional portfolio chatbot.
+
+## 🌐 Live Demo
+
+**API URL**: https://ai-assistant-portfolio-eka7.onrender.com
+
+**Endpoints:**
+- Health Check: https://ai-assistant-portfolio-eka7.onrender.com/health
+- API Documentation: Available in development mode only
 
 ## 🚀 Technologies
 

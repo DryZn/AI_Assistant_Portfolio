@@ -14,7 +14,6 @@ class TestAPI:
             mock_service.get_response = AsyncMock(
                 return_value={"answer": "Test response", "sources": ["test.md"]}
             )
-            mock_service.memory.clear = MagicMock()
 
             mock_get_service.return_value = mock_service
             self.client = TestClient(app)
@@ -39,9 +38,3 @@ class TestAPI:
         data = response.json()
         assert data["response"] == "Test response"
         assert data["sources"] == ["test.md"]
-
-    def test_reset_endpoint(self):
-        """Test conversation reset endpoint"""
-        response = self.client.post("/api/chat/reset")
-        assert response.status_code == 200
-        assert response.json() == {"message": "Conversation reset successfully"}

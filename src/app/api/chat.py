@@ -17,6 +17,7 @@ def get_gemini_service():
 
 class ChatRequest(BaseModel):
     message: str
+    history: list[dict] = []
 
 
 class ChatResponse(BaseModel):
@@ -34,23 +35,10 @@ async def chat(request: ChatRequest):
             raise HTTPException(status_code=400, detail="Message cannot be empty")
 
         service = get_gemini_service()
-        result = await service.get_response(request.message)
+        result = await service.get_response(request.message, request.history)
 
         return ChatResponse(response=result["answer"], sources=result["sources"])
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=f"Error processing request: {str(e)}"
-        )
-
-
-@router.post("/chat/reset")
-async def reset_chat():
-    """Reset conversation memory"""
-    try:
-        service = get_gemini_service()
-        service.memory.clear()
-        return {"message": "Conversation reset successfully"}
-    except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Error resetting conversation: {str(e)}"
         )

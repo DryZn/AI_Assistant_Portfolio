@@ -6,7 +6,6 @@ from langchain_community.vectorstores.faiss import FAISS
 from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import ChatPromptTemplate
-from langchain.memory import ConversationBufferMemory
 import google.generativeai as genai
 import os
 
@@ -21,11 +20,7 @@ class GeminiRAGService:
             model="models/gemini-embedding-001", task_type="retrieval_document"
         )
 
-        self.llm = ChatGoogleGenerativeAI(
-            # model="gemini-2.0-flash",
-            model="gemini-flash-latest",
-            temperature=0.7,
-        )
+        self.llm = ChatGoogleGenerativeAI(model="gemini-flash-latest", temperature=0.7)
 
         # Initialize vector store directly
         chunks = self.load_documents()
@@ -50,10 +45,6 @@ class GeminiRAGService:
             self.vector_store.as_retriever(search_kwargs={"k": 3}), document_chain
         )
 
-        self.memory = ConversationBufferMemory(
-            memory_key="chat_history", return_messages=True, output_key="answer"
-        )
-
     def load_documents(self):
         data_path = Path(__file__).parent.parent.parent.parent / "data"
         loader = DirectoryLoader(
@@ -70,18 +61,15 @@ class GeminiRAGService:
         chunks = text_splitter.split_documents(documents)
         return chunks
 
-    async def get_response(self, question: str) -> dict:
-        # Get chat history for context
-        chat_history = self.memory.chat_memory.messages
+    async def get_response(
+        self, question: str, history: list[dict] | None = None
+    ) -> dict:
+        # Format history from frontend
         history_text = "\n".join(
-            [f"{msg.type}: {msg.content}" for msg in chat_history[-4:]]
+            [f"{msg['role']}: {msg['content']}" for msg in (history or [])]
         )
 
         result = self.qa_chain.invoke({"input": question, "chat_history": history_text})
-
-        # Save conversation to memory
-        self.memory.chat_memory.add_user_message(question)
-        self.memory.chat_memory.add_ai_message(result["answer"])
 
         return {
             "answer": result["answer"],

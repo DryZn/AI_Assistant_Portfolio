@@ -77,3 +77,24 @@ class GeminiRAGService:
                 doc.metadata.get("source", "") for doc in result.get("context", [])
             ],
         }
+
+    async def get_response_stream(
+        self, question: str, history: list[dict] | None = None
+    ):
+        # Format history from frontend
+        history_text = "\n".join(
+            [f"{msg['role']}: {msg['content']}" for msg in (history or [])]
+        )
+
+        # Stream response
+        async for chunk in self.qa_chain.astream(
+            {"input": question, "chat_history": history_text}
+        ):
+            if "answer" in chunk:
+                yield chunk["answer"]
+            elif "context" in chunk:
+                # Send sources at the end
+                sources = [
+                    doc.metadata.get("source", "") for doc in chunk.get("context", [])
+                ]
+                yield f"\n__SOURCES__:{','.join(sources)}"

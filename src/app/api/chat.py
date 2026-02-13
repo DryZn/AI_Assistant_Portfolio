@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
+from google.api_core.exceptions import ResourceExhausted
 from src.app.services.gemini_service import GeminiRAGService
 
 router = APIRouter()
@@ -63,6 +64,11 @@ async def chat_stream(request: ChatRequest):
                 yield chunk
 
         return StreamingResponse(generate(), media_type="text/plain")
+    except ResourceExhausted:
+        raise HTTPException(
+            status_code=429,
+            detail="Rate limit exceeded. Please try again in a few moments.",
+        )
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=f"Error processing request: {str(e)}"

@@ -6,6 +6,10 @@ load_dotenv()
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.app.api.chat import router as chat_router
+from src.logging_config import setup_logging
+
+# Configure logging to filter /health
+setup_logging()
 
 # Disable docs in production
 ENV = os.getenv("ENV", "development")

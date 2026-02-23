@@ -133,9 +133,10 @@ backend/
 │       └── ci.yml           # CI/CD Pipeline
 ├── src/
 │   ├── main.py              # FastAPI application
+│   ├── logging_config.py    # Logging configuration (filters /health)
 │   └── app/
 │       ├── api/
-│       │   └── chat.py      # Chat endpoints
+│       │   └── chat.py      # Chat endpoints with logging
 │       └── services/
 │           └── gemini_service.py # RAG service with Gemini
 ├── data/

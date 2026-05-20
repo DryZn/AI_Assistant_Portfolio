@@ -8,6 +8,7 @@ from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import ChatPromptTemplate
 import google.generativeai as genai
 import os
+import json
 
 
 class GeminiRAGService:
@@ -86,15 +87,33 @@ class GeminiRAGService:
             [f"{msg['role']}: {msg['content']}" for msg in (history or [])]
         )
 
-        # Stream response
-        async for chunk in self.qa_chain.astream(
-            {"input": question, "chat_history": history_text}
-        ):
-            if "answer" in chunk:
-                yield chunk["answer"]
-            elif "context" in chunk:
-                # Send sources at the end
-                sources = [
-                    doc.metadata.get("source", "") for doc in chunk.get("context", [])
-                ]
-                yield f"\n__SOURCES__:{','.join(sources)}"
+        # Stream response as NDJSON (one JSON object per line).
+        # Events:
+        # - {"type":"sources","sources":[...]} -- sent when context arrives
+        # - {"type":"text","text":"..."} -- text chunks
+        # - {"type":"done"} -- optional final event
+        try:
+            async for chunk in self.qa_chain.astream(
+                {"input": question, "chat_history": history_text}
+            ):
+                if "answer" in chunk:
+                    # answer may be incremental; send as text event
+                    obj = {"type": "text", "text": chunk["answer"]}
+                    yield json.dumps(obj) + "\n"
+                elif "context" in chunk:
+                    # Send sources event
+                    sources = [
+                        doc.metadata.get("source", "")
+                        for doc in chunk.get("context", [])
+                    ]
+                    obj = {"type": "sources", "sources": sources}
+                    yield json.dumps(obj) + "\n"
+            # after streaming finishes, send done event
+            yield json.dumps({"type": "done"}) + "\n"
+        except Exception as e:
+            # send an error event so client can react (as NDJSON)
+            try:
+                yield json.dumps({"type": "error", "error": str(e)}) + "\n"
+            except Exception:
+                # last resort: yield a simple text error
+                yield json.dumps({"type": "error", "error": "stream error"}) + "\n"
